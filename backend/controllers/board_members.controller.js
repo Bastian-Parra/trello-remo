@@ -1,55 +1,49 @@
 import { BoardMembersService } from "../services/board_members.services.js";
 
 export const BoardMembersController = {
-  async getAllBoardMembers(req, res) {
+  async getMembersByBoard(req, res) {
     try {
-      const members = await BoardMembersService.getAllBoardMembers();
-      if (!members) {
-        return res.status(404).json({ error: "Board members not found" });
-      }
+      const { board_id } = req.params;
+
+      const members = await BoardMembersService.getMembersByBoard(board_id);
+
       res.status(200).json(members);
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: error.message });
     }
   },
 
-  async getBoardMemberById(req, res) {
+  async getBoardsByUser(req, res) {
     try {
-      const { user_id, board_id } = req.params;
-      const member = await BoardMembersService.getBoardMemberById(user_id, board_id);
-      if (!member) {
-        return res.status(404).json({ error: "Board member not found" });
-      }
-      res.status(200).json(member);
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  },
+      const { user_id } = req.params;
 
-  async deleteBoardMember(req, res) {
-    try {
-      const { user_id, board_id } = req.params;
-      await BoardMembersService.deleteBoardMember(user_id, board_id);
-      res.status(200).json({ message: "Board member deleted correctly" });
+      const boards = await BoardMembersService.getBoardsByUser(user_id);
+
+      res.status(200).json(boards);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
 
-  async updateBoardMember(req, res) {
+  async addMemberToBoard(req, res) {
     try {
-      const { user_id, board_id } = req.params;
-      await BoardMembersService.updateBoardMember(user_id, board_id, req.body);
-      res.status(204).json({ message: "Board member updated correctly" });
+      const { board_id, user_id } = req.body;
+
+      await BoardMembersService.addMemberToBoard(board_id, user_id);
+
+      res.status(201).json({ message: "User removed from board" });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
 
-  async createBoardMember(req, res) {
+  async removeMemberFromBoard(req, res) {
     try {
-      const newMember = await BoardMembersService.createBoardMember(req.body);
-      res.status(201).json(newMember);
+      const { board_id, user_id } = req.body;
+
+      await BoardMembersService.removeMemberFromBoard(board_id, user_id);
+
+      res.status(200).json({ message: "User removed from board" });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

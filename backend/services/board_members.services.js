@@ -1,53 +1,35 @@
 import { BoardMembers } from "../models/board_members.model.js";
-import { instanceNotFound } from "../utils/instanceNotFound.js";
 
 export const BoardMembersService = {
-  async getAllBoardMembers() {
+  async getMembersByBoard(board_id) {
     try {
-      const members = await BoardMembers.findAll();
-      instanceNotFound(members);
-      return members;
+      return await BoardMembers.findAll({ where: { board_id } });
     } catch (error) {
-      throw new Error("Failed to get all board members");
+      throw new Error("Failed to get board members");
     }
   },
 
-  async getBoardMemberById(user_id, board_id) {
+  async getBoardsByUser(user_id) {
     try {
-      const member = await BoardMembers.findOne({ where: { user_id, board_id } });
-      instanceNotFound(member);
-      return member;
+      return await BoardMembers.findAll({ where: { user_id }})
     } catch (error) {
-      throw new Error("Failed to get this board member");
+      throw new Error("Failed to get boards by user");
     }
   },
 
-  async deleteBoardMember(user_id, board_id) {
+  async addMemberToBoard(board_id, user_id) {
     try {
-      const member = await BoardMembers.findOne({ where: { user_id, board_id } });
-      instanceNotFound(member);
-      await BoardMembers.destroy({ where: { user_id, board_id } });
+      return await BoardMembers.create({ board_id, user_id });
     } catch (error) {
-      throw new Error("Failed to delete board member");
+      throw new Error("Failed to add member to board");
     }
   },
 
-  async updateBoardMember(user_id, board_id, newData) {
+  async removeMemberFromBoard(board_id, user_id) {
     try {
-      const member = await BoardMembers.findOne({ where: { user_id, board_id } });
-      instanceNotFound(member);
-      await BoardMembers.update(newData, { where: { user_id, board_id } });
+      await BoardMembers.destroy({ where: { board_id, user_id }})
     } catch (error) {
-      throw new Error("Failed to update board member");
+      throw new Error("Failed to remove member from board");
     }
-  },
-
-  async createBoardMember(data) {
-    try {
-      const newMember = await BoardMembers.create(data);
-      return newMember;
-    } catch (error) {
-      throw new Error("Failed to create board member");
-    }
-  },
+  }
 };

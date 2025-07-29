@@ -1,53 +1,35 @@
-import { CardAssignee } from "../models/card_assignees.model.js";
-import { instanceNotFound } from "../utils/instanceNotFound.js";
+import { CardAssignee } from "../models/card_assignees.model.js"
 
 export const CardAssigneeService = {
-  async getAllCardAssignees() {
+  async getAssignessByCard(card_id) {
     try {
-      const assignees = await CardAssignee.findAll();
-      instanceNotFound(assignees);
-      return assignees;
+      return await CardAssignee.findAll({ where: { card_id } });
     } catch (error) {
-      throw new Error("Failed to get all card assignees");
+      throw new Error("Failed to get assignees by card");
     }
   },
 
-  async getCardAssigneeById(card_id, user_id) {
+  async getCardsByUser(user_id) {
     try {
-      const assignee = await CardAssignee.findOne({ where: { card_id, user_id } });
-      instanceNotFound(assignee);
-      return assignee;
+      return await CardAssignee.findAll({ where: { user_id } });
     } catch (error) {
-      throw new Error("Failed to get this card assignee");
+      throw new Error("Failed to get cards by user");
     }
   },
 
-  async deleteCardAssignee(card_id, user_id) {
+  async assignUserToCard(card_id, user_id) {
     try {
-      const assignee = await CardAssignee.findOne({ where: { card_id, user_id } });
-      instanceNotFound(assignee);
+      return await CardAssignee.create({ card_id, user_id });
+    } catch (error) {
+      throw new Error("Failed to assign user to card");
+    }
+  },
+
+  async unassignUserFromCard(card_id, user_id) {
+    try {
       await CardAssignee.destroy({ where: { card_id, user_id } });
     } catch (error) {
-      throw new Error("Failed to delete card assignee");
-    }
-  },
-
-  async updateCardAssignee(card_id, user_id, newData) {
-    try {
-      const assignee = await CardAssignee.findOne({ where: { card_id, user_id } });
-      instanceNotFound(assignee);
-      await CardAssignee.update(newData, { where: { card_id, user_id } });
-    } catch (error) {
-      throw new Error("Failed to update card assignee");
-    }
-  },
-
-  async createCardAssignee(data) {
-    try {
-      const newAssignee = await CardAssignee.create(data);
-      return newAssignee;
-    } catch (error) {
-      throw new Error("Failed to create card assignee");
+      throw new Error("Failed to unassign user from card");
     }
   },
 };

@@ -1,57 +1,46 @@
 import { CardAssigneeService } from "../services/card_assignees.services.js";
 
 export const CardAssigneeController = {
-  async getAllCardAssignees(req, res) {
+  async getAssigneesByCard(req, res) {
     try {
-      const assignees = await CardAssigneeService.getAllCardAssignees();
-      if (!assignees) {
-        return res.status(404).json({ error: "Card assignees not found" });
-      }
+      const { card_id } = req.params;
+      const assignees = await CardAssigneeService.getAssignessByCard(card_id)
+
       res.status(200).json(assignees);
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: error.message });
     }
   },
 
-  async getCardAssigneeById(req, res) {
+  async getCardsByUser(req, res) {
     try {
-      const { card_id, user_id } = req.params;
-      const assignee = await CardAssigneeService.getCardAssigneeById(card_id, user_id);
-      if (!assignee) {
-        return res.status(404).json({ error: "Card assignee not found" });
-      }
-      res.status(200).json(assignee);
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  },
+      const { user_id } = req.params;
+      const cards = await CardAssigneeService.getCardsByUser(user_id)
 
-  async deleteCardAssignee(req, res) {
-    try {
-      const { card_id, user_id } = req.params;
-      await CardAssigneeService.deleteCardAssignee(card_id, user_id);
-      res.status(200).json({ message: "Card assignee deleted correctly" });
+      res.status(200).json(cards);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
 
-  async updateCardAssignee(req, res) {
+  async assignUserToCard(req, res) {
     try {
-      const { card_id, user_id } = req.params;
-      await CardAssigneeService.updateCardAssignee(card_id, user_id, req.body);
-      res.status(204).json({ message: "Card assignee updated correctly" });
+      const { card_id, user_id } = req.body;
+      const newAssignee = await CardAssigneeService.assignUserToCard(card_id, user_id)
+      
+      res.status(200).json(newAssignee);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
 
-  async createCardAssignee(req, res) {
+  async unassignUserFromCard(req, res) {
     try {
-      const newAssignee = await CardAssigneeService.createCardAssignee(req.body);
-      res.status(201).json(newAssignee);
+      const { card_id, user_id } = req.body;
+      await CardAssigneeService.unassignUserFromCard(card_id, user_id)
+      res.status(204).json({ message: "User unassigned from card" });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  },
+  }
 };
