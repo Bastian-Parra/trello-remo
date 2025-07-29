@@ -1,12 +1,12 @@
 import { User } from "../models/users.model.js";
-import { userNotFound } from "../utils/userNotFound.js";
+import { instanceNotFound } from "../utils/instanceNotFound.js";
 
 export const UserService = {
   async getAllUsers() {
     try {
       const users = await User.findAll();
 
-      userNotFound(users);
+      instanceNotFound(users);
 
       return users;
     } catch (error) {
@@ -18,7 +18,7 @@ export const UserService = {
     try {
       const user = await User.findByPk(id);
 
-      userNotFound(user);
+      instanceNotFound(user);
 
       return user;
     } catch (error) {
@@ -30,7 +30,7 @@ export const UserService = {
     try {
       const user = await User.findByPk(id);
 
-      userNotFound(user);
+      instanceNotFound(user);
 
       await User.destroy({ where: { id: user.id } });
     } catch (error) {
@@ -42,7 +42,7 @@ export const UserService = {
     try {
       const user = await User.findByPk(id);
 
-      userNotFound(user);
+      instanceNotFound(user);
 
       await User.update(newData, { where: { id }});
     } catch (error) {
